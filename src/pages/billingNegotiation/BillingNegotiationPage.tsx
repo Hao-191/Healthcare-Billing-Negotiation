@@ -73,6 +73,7 @@ const BillingNegotiationPage: React.FC = () => {
       setCalling(true);
       const result = await initiateTwilioCall();
       if (result.success) {
+        console.log("Twilio call initiated successfully.");
         setAlert({
           type: "success",
           message: "Twilio call initiated successfully.",
