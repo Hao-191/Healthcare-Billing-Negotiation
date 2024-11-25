@@ -8,7 +8,7 @@ interface CallButtonProps {
 const CallButton: React.FC<CallButtonProps> = ({ onCall }) => {
   return (
     <Button variant="contained" color="primary" onClick={onCall}>
-      Initiate Call
+      Negotiate
     </Button>
   );
 };

@@ -1,18 +1,23 @@
-import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import React from "react";
+import {
+  Box,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
-interface Issue {
-  description: string;
-  charged: number;
-  expected: number;
-  confidence: number;
-}
+// Components
+import CallButton from "./CallButton";
 
-interface IssueTableProps {
-  issues: Issue[];
-}
+// Types
+import { IssueTableProps } from "../types";
 
-const IssueTable: React.FC<IssueTableProps> = ({ issues }) => {
+const IssueTable: React.FC<IssueTableProps> = ({ calling, issues, onNegotiate }) => {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="simple table">
@@ -22,17 +27,33 @@ const IssueTable: React.FC<IssueTableProps> = ({ issues }) => {
             <TableCell align="right">Charged</TableCell>
             <TableCell align="right">Expected</TableCell>
             <TableCell align="right">Confidence</TableCell>
+            <TableCell align="right">Actions</TableCell>{" "}
+            {/* Added cell for actions */}
           </TableRow>
         </TableHead>
         <TableBody>
-          {issues.map((row, index) => (
+          {issues.map((issue, index) => (
             <TableRow key={index}>
               <TableCell component="th" scope="row">
-                {row.description}
+                {issue.description}
               </TableCell>
-              <TableCell align="right">{row.charged}</TableCell>
-              <TableCell align="right">{row.expected}</TableCell>
-              <TableCell align="right">{`${(row.confidence * 100).toFixed(2)}%`}</TableCell>
+              <TableCell align="right">{issue.charged}</TableCell>
+              <TableCell align="right">{issue.expected}</TableCell>
+              <TableCell align="right">{`${(issue.confidence * 100).toFixed(
+                2
+              )}%`}</TableCell>
+              <TableCell align="right">
+                <Box>
+                  {calling ? (
+                    <CircularProgress />
+                  ) : (
+                    <CallButton
+                      onCall={() => onNegotiate(issue)}
+                    />
+                  )}
+                </Box>
+                {/* Pass the specific issue to the negotiate function */}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

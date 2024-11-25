@@ -13,7 +13,6 @@ import {
 // Components
 import BillingUpload from "./components/BillingUpload";
 import IssueTable from "./components/IssueTable";
-import CallButton from "./components/CallButton";
 
 // Types
 import { Issue, AlertState } from "./types";
@@ -69,9 +68,10 @@ const BillingNegotiationPage: React.FC = () => {
     }
   };
 
-  const handleCallInitiation = async () => {
+  const handleNegotiation = async (issue: Issue) => {
     try {
       setCalling(true);
+      console.log(issue)
       const result = await initiateTwilioCall();
       if (result.success) {
         setAlert({
@@ -112,14 +112,9 @@ const BillingNegotiationPage: React.FC = () => {
           {loading && <LinearProgress variant="determinate" value={progress} />}
         </Box>
         <Box flexGrow={1}>
-          <IssueTable issues={issues} />
+          <IssueTable calling={calling} issues={issues} onNegotiate={handleNegotiation}/>
         </Box>
         <Box>
-          {calling ? (
-            <CircularProgress />
-          ) : (
-            <CallButton onCall={handleCallInitiation} />
-          )}
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={6000}
