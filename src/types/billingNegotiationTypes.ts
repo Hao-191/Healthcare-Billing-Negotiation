@@ -1,7 +1,9 @@
 export interface Issue {
+    code: number;
     description: string;
     charged: number;
     expected: number;
+    flag: string;
     confidence: number;
  }
  

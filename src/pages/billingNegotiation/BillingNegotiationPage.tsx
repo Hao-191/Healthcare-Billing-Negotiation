@@ -15,7 +15,7 @@ import BillingUpload from "./components/BillingUpload";
 import IssueTable from "./components/IssueTable";
 
 // Types
-import { Issue, AlertState } from "./types";
+import { Issue, AlertState } from "../../types/billingNegotiationTypes";
 
 // Services
 import {

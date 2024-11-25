@@ -1,11 +1,7 @@
 const BASE_URL = 'https://az-healthcare-backend.azurewebsites.net/api';
+const LOCAL_URL = 'http://localhost:7071/api';
 
-interface Issue {
-    description: string;
-    charged: number;
-    expected: number;
-    confidence: number;
- }
+import { Issue } from "../types/billingNegotiationTypes";
 
 interface BillingUploadResponse {
     success: boolean;
@@ -22,7 +18,7 @@ interface TwilioCallResponse {
 
 // Function to handle uploading of billing data
 export const processBillingUpload = async (file: File): Promise<BillingUploadResponse> => {
-    const url = `${BASE_URL}/processbillingupload`;
+    const url = `${LOCAL_URL}/processbillingupload`;
     const formData = new FormData();
     formData.append('file', file);
 
