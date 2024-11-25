@@ -51,17 +51,18 @@ const BillingNegotiationPage: React.FC = () => {
       }, 200);
 
       const result = await processBillingUpload(file);
-
-      // Assume your API could call `onProgress` with updates
       if (result.success) {
         setIssues(result.data?.issues || []);
         setAlert({ type: "success", message: "File processed successfully." });
+        setSnackbarOpen(true);
       } else {
         setAlert({ type: "error", message: result.message });
+        setSnackbarOpen(true);
       }
     } catch (error) {
       console.error(error);
       setAlert({ type: "error", message: "Upload failed. Please try again." });
+      setSnackbarOpen(true);
     } finally {
       setLoading(false);
       setProgress(0); // Reset progress after the operation
@@ -73,17 +74,19 @@ const BillingNegotiationPage: React.FC = () => {
       setCalling(true);
       const result = await initiateTwilioCall();
       if (result.success) {
-        console.log("Twilio call initiated successfully.");
         setAlert({
           type: "success",
           message: "Twilio call initiated successfully.",
         });
+        setSnackbarOpen(true);
       } else {
         setAlert({ type: "error", message: result.message });
+        setSnackbarOpen(true);
       }
     } catch (error) {
       console.log(error);
       setAlert({ type: "error", message: "Failed to initiate call." });
+      setSnackbarOpen(true);
     } finally {
       setCalling(false);
     }
