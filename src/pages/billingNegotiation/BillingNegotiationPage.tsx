@@ -15,8 +15,14 @@ import BillingUpload from "./components/BillingUpload";
 import IssueTable from "./components/IssueTable";
 import CallButton from "./components/CallButton";
 
-// types
+// Types
 import { Issue, AlertState } from "./types";
+
+// Services
+import {
+  processBillingUpload,
+  initiateTwilioCall,
+} from "../../services/BillingNegotiationAPIs";
 
 const BillingNegotiationPage: React.FC = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -29,48 +35,57 @@ const BillingNegotiationPage: React.FC = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleFileUpload = async (file: File) => {
-    setLoading(true);
-    setProgress(0);
-    console.log("Uploaded file:", file.name);
+    try {
+      setLoading(true);
+      setProgress(0); // Start progress at 0
 
-    // Simulate file processing progress
-    const interval = setInterval(
-      () =>
-        setProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval); // Stop the interval when progress reaches 100%
-            return 100;
+      // Simulate gradual progress update
+      const timer = setInterval(() => {
+        setProgress((prevProgress) => {
+          if (prevProgress < 100) {
+            return prevProgress + 10;
           }
-          return prev + 20;
-        }),
-      500
-    );
+          clearInterval(timer);
+          return 100; // When progress reaches 100, clear interval
+        });
+      }, 200);
 
-    setTimeout(() => {
+      const result = await processBillingUpload(file);
+
+      // Assume your API could call `onProgress` with updates
+      if (result.success) {
+        setIssues(result.data?.issues || []);
+        setAlert({ type: "success", message: "File processed successfully." });
+      } else {
+        setAlert({ type: "error", message: result.message });
+      }
+    } catch (error) {
+      console.error(error);
+      setAlert({ type: "error", message: "Upload failed. Please try again." });
+    } finally {
       setLoading(false);
-      setIssues([
-        {
-          description: "Duplicate Charge",
-          charged: 350,
-          expected: 175,
-          confidence: 0.95,
-        },
-      ]);
-      setProgress(0); // Reset progress after completing the simulation
-    }, 2500);
+      setProgress(0); // Reset progress after the operation
+    }
   };
 
-  const handleCallInitiation = () => {
-    setCalling(true);
-    setAlert({ type: "info", message: "Initiating call..." });
-    setSnackbarOpen(true); // Open the Snackbar with the alert message
-
-    console.log("Calling Twilio API to initiate call"); // Simulate API call
-    setTimeout(() => {
+  const handleCallInitiation = async () => {
+    try {
+      setCalling(true);
+      const result = await initiateTwilioCall();
+      if (result.success) {
+        setAlert({
+          type: "success",
+          message: "Twilio call initiated successfully.",
+        });
+      } else {
+        setAlert({ type: "error", message: result.message });
+      }
+    } catch (error) {
+      console.log(error);
+      setAlert({ type: "error", message: "Failed to initiate call." });
+    } finally {
       setCalling(false);
-      setAlert({ type: "success", message: "Call initiated successfully!" });
-      setTimeout(() => setSnackbarOpen(false), 3000); // Close the Snackbar after showing message for 3 seconds
-    }, 2000);
+    }
   };
 
   return (
