@@ -54,7 +54,7 @@ const BillingNegotiationPage: React.FC = () => {
         const issues = result.data?.issues || [];
         if (issues.length > 0) {
           setIssues(issues);
-          setAlert({ type: "success", message: "File processed successfully." });
+          setAlert({ type: "success", message: "Billing processed successfully." });
         }
         else{
           setIssues([]);
