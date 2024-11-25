@@ -6,9 +6,9 @@ export interface Issue {
  }
  
 export interface IssueTableProps {
-   calling: boolean;
+   currentlyCalling: number | null;
    issues: Issue[];
-   onNegotiate: (issue: Issue) => void;  // Function to initiate negotiation
+   onNegotiate: (index: number, issue: Issue) => void;  // Function to initiate negotiation
  }
 
  export interface AlertState {

@@ -28,7 +28,7 @@ const BillingNegotiationPage: React.FC = () => {
   const [progress, setProgress] = useState(0); // Track progress of file processing
 
   const [loading, setLoading] = useState(false);
-  const [calling, setCalling] = useState(false);
+  const [currentlyCalling, setCurrentlyCalling] = useState<number | null>(null);
 
   const [alert, setAlert] = useState<AlertState | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -68,27 +68,28 @@ const BillingNegotiationPage: React.FC = () => {
     }
   };
 
-  const handleNegotiation = async (issue: Issue) => {
+  const handleNegotiation = async (index: number, issue: Issue) => {
     try {
-      setCalling(true);
-      console.log(issue)
-      const result = await initiateTwilioCall();
+      setCurrentlyCalling(index); // Start tracking which issue is calling
+      console.log("Negotiating for issue:", issue);
+  
+      const result = await initiateTwilioCall(); // You might want to pass issue-specific data here
+  
       if (result.success) {
         setAlert({
           type: "success",
-          message: "Twilio call initiated successfully.",
+          message: `Twilio call initiated successfully for issue: ${issue.description}`,
         });
-        setSnackbarOpen(true);
       } else {
         setAlert({ type: "error", message: result.message });
-        setSnackbarOpen(true);
       }
+      setSnackbarOpen(true);
     } catch (error) {
-      console.log(error);
+      console.error("Call failed:", error);
       setAlert({ type: "error", message: "Failed to initiate call." });
       setSnackbarOpen(true);
     } finally {
-      setCalling(false);
+      setCurrentlyCalling(null); // Reset the currently calling index
     }
   };
 
@@ -112,7 +113,11 @@ const BillingNegotiationPage: React.FC = () => {
           {loading && <LinearProgress variant="determinate" value={progress} />}
         </Box>
         <Box flexGrow={1}>
-          <IssueTable calling={calling} issues={issues} onNegotiate={handleNegotiation}/>
+          <IssueTable
+            currentlyCalling={currentlyCalling}
+            issues={issues}
+            onNegotiate={handleNegotiation}
+          />
         </Box>
         <Box>
           <Snackbar

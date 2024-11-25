@@ -17,7 +17,7 @@ import CallButton from "./CallButton";
 // Types
 import { IssueTableProps } from "../types";
 
-const IssueTable: React.FC<IssueTableProps> = ({ calling, issues, onNegotiate }) => {
+const IssueTable: React.FC<IssueTableProps> = ({ currentlyCalling, issues, onNegotiate }) => {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="simple table">
@@ -27,8 +27,7 @@ const IssueTable: React.FC<IssueTableProps> = ({ calling, issues, onNegotiate })
             <TableCell align="right">Charged</TableCell>
             <TableCell align="right">Expected</TableCell>
             <TableCell align="right">Confidence</TableCell>
-            <TableCell align="right">Actions</TableCell>{" "}
-            {/* Added cell for actions */}
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -39,20 +38,15 @@ const IssueTable: React.FC<IssueTableProps> = ({ calling, issues, onNegotiate })
               </TableCell>
               <TableCell align="right">{issue.charged}</TableCell>
               <TableCell align="right">{issue.expected}</TableCell>
-              <TableCell align="right">{`${(issue.confidence * 100).toFixed(
-                2
-              )}%`}</TableCell>
+              <TableCell align="right">{`${(issue.confidence * 100).toFixed(2)}%`}</TableCell>
               <TableCell align="right">
                 <Box>
-                  {calling ? (
+                  {currentlyCalling === index ? (
                     <CircularProgress />
                   ) : (
-                    <CallButton
-                      onCall={() => onNegotiate(issue)}
-                    />
+                    <CallButton onCall={() => onNegotiate(index, issue)} />
                   )}
                 </Box>
-                {/* Pass the specific issue to the negotiate function */}
               </TableCell>
             </TableRow>
           ))}
