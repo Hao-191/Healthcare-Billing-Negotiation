@@ -6,6 +6,7 @@ import {
   Box,
   CircularProgress,
   Alert,
+  LinearProgress,
 } from "@mui/material";
 
 // Components
@@ -13,28 +14,34 @@ import BillingUpload from "./components/BillingUpload";
 import IssueTable from "./components/IssueTable";
 import CallButton from "./components/CallButton";
 
-// Define interfaces
-interface Issue {
-  description: string;
-  charged: number;
-  expected: number;
-  confidence: number;
-}
-
-interface AlertState {
-  type: "success" | "error" | "info" | "warning"; 
-  message: string; 
-}
+// types
+import { Issue, AlertState } from "./types";
 
 const BillingNegotiationPage: React.FC = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(false);
   const [calling, setCalling] = useState(false);
-  const [alert, setAlert] = useState<AlertState | null>(null); 
+  const [alert, setAlert] = useState<AlertState | null>(null);
+  const [progress, setProgress] = useState(0); // Track progress of file processing
 
   const handleFileUpload = async (file: File) => {
     setLoading(true);
-    console.log(file); // Simulate file processing
+    setProgress(0);
+    console.log("Uploaded file:", file.name);
+
+    // Simulate file processing progress
+    const interval = setInterval(
+      () =>
+        setProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval); // Stop the interval when progress reaches 100%
+            return 100;
+          }
+          return prev + 20;
+        }),
+      500
+    );
+
     setTimeout(() => {
       setLoading(false);
       setIssues([
@@ -45,13 +52,13 @@ const BillingNegotiationPage: React.FC = () => {
           confidence: 0.95,
         },
       ]);
-    }, 2000);
+      setProgress(0); // Reset progress after completing the simulation
+    }, 2500);
   };
 
   const handleCallInitiation = () => {
     setCalling(true);
     setAlert({ type: "info", message: "Initiating call..." });
-    console.log("Calling Twilio API to initiate call"); // Simulate API call
     setTimeout(() => {
       setCalling(false);
       setAlert({ type: "success", message: "Call initiated successfully!" });
@@ -75,6 +82,7 @@ const BillingNegotiationPage: React.FC = () => {
           ) : (
             <BillingUpload onUpload={handleFileUpload} />
           )}
+          {loading && <LinearProgress variant="determinate" value={progress} />}
         </Box>
         <Box flexGrow={1}>
           <IssueTable issues={issues} />
