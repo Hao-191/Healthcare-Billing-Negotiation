@@ -51,8 +51,15 @@ const BillingNegotiationPage: React.FC = () => {
 
       const result = await processBillingUpload(file);
       if (result.success) {
-        setIssues(result.data?.issues || []);
-        setAlert({ type: "success", message: "File processed successfully." });
+        const issues = result.data?.issues || [];
+        if (issues.length > 0) {
+          setIssues(issues);
+          setAlert({ type: "success", message: "File processed successfully." });
+        }
+        else{
+          setIssues([]);
+          setAlert({ type: "success", message: "No potential errors detected." });
+        }
         setSnackbarOpen(true);
       } else {
         setAlert({ type: "error", message: result.message });
