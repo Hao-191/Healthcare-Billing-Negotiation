@@ -1,5 +1,4 @@
 const BASE_URL = 'https://az-healthcare-backend.azurewebsites.net/api';
-const LOCAL_URL = 'http://localhost:7071/api';
 
 import { Issue } from "../types/billingNegotiationTypes";
 
@@ -18,7 +17,15 @@ interface TwilioCallResponse {
 
 // Function to handle uploading of billing data
 export const processBillingUpload = async (file: File): Promise<BillingUploadResponse> => {
-    const url = `${LOCAL_URL}/processbillingupload`;
+    if (!file.type.match('application/json') && !file.type.match('text/plain')) {
+        throw new Error('Unsupported file type. Please upload JSON or plain text files.');
+    }
+
+    if (file.size > 1024 * 1024 * 5) {
+        throw new Error('File too large. Please upload a file smaller than 5MB.');
+    }
+    
+    const url = `${BASE_URL}/processbillingupload`;
     const formData = new FormData();
     formData.append('file', file);
 
