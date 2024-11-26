@@ -87,7 +87,6 @@ const BillingNegotiationPage: React.FC = () => {
   const handleNegotiation = async (index: number, issue: Issue) => {
     try {
       setCurrentlyCalling(index); // Start tracking which issue is calling
-      console.log("Negotiating for issue:", issue);
 
       const result = await initiateTwilioCall(billId, patientId, issue);
 
