@@ -55,7 +55,7 @@ export const initiateTwilioCall = async (billId: string, patientId: string, issu
      formData.append('charged', issue.charged.toString());
      formData.append('expected', issue.expected.toString());
      formData.append('flag', issue.flag);
-
+     console.log(formData);
      const response = await fetch(url, {
          method: 'POST',
          body: formData
