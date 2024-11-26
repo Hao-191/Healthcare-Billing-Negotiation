@@ -44,26 +44,26 @@ export const processBillingUpload = async (file: File): Promise<BillingUploadRes
 };
 
 // Function to initiate a Twilio call
-export const initiateTwilioCall = async (bill_id: string, patient_id: string, issue: Issue): Promise<TwilioCallResponse> => {
+export const initiateTwilioCall = async (billId: string, patientId: string, issue: Issue): Promise<TwilioCallResponse> => {
     const url = `${BASE_URL}/twiliocall?code=TbAFwtKKN_ZliH-m_h6PS6WYtCsBozYnMROILX1MKfF5AzFutCFtGA%3D%3D`;
 
-    const params = new URLSearchParams({
-        // to: "+1929750540"
-        bill_id: bill_id,
-        patient_id: patient_id,
-        description: issue.description,
-        charged: issue.charged.toString(),
-        expected: issue.expected.toString(),
-        flag: issue.flag,
-    });
+     const formData = new FormData();
+     //formData.append('to', phone_number);
+     formData.append('bill_id', billId);
+     formData.append('patient_id', patientId);
+     formData.append('description', issue.description);
+     formData.append('charged', issue.charged.toString());
+     formData.append('expected', issue.expected.toString());
+     formData.append('flag', issue.flag);
 
-    const response = await fetch(url + "?" + params.toString(), {
-        method: 'POST'
-    });
+     const response = await fetch(url, {
+         method: 'POST',
+         body: formData
+     });
 
-    if (!response.ok) {
-        throw new Error('Failed to initiate Twilio call');
-    }
-
-    return response.json();
-};
+     if (!response.ok) {
+         throw new Error('Failed to initiate Twilio call');
+     }
+ 
+     return response.json();
+ };
