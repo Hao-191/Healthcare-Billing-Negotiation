@@ -25,6 +25,8 @@ import {
 
 const BillingNegotiationPage: React.FC = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
+  const [billId, setBillId] = useState<string>("");
+  const [patientId, setPatientId] = useState<string>("");
   const [progress, setProgress] = useState(0); // Track progress of file processing
 
   const [loading, setLoading] = useState(false);
@@ -54,12 +56,19 @@ const BillingNegotiationPage: React.FC = () => {
         const issues = result.data?.issues || [];
         if (issues.length > 0) {
           setIssues(issues);
-          setAlert({ type: "success", message: "Billing processed successfully." });
-        }
-        else{
+          setAlert({
+            type: "success",
+            message: "Billing processed successfully.",
+          });
+        } else {
           setIssues([]);
-          setAlert({ type: "success", message: "No potential errors detected." });
+          setAlert({
+            type: "success",
+            message: "No potential errors detected.",
+          });
         }
+        setBillId(result.data.bill_id);
+        setPatientId(result.data.patient_id);
         setSnackbarOpen(true);
       } else {
         setAlert({ type: "error", message: result.message });
@@ -79,9 +88,9 @@ const BillingNegotiationPage: React.FC = () => {
     try {
       setCurrentlyCalling(index); // Start tracking which issue is calling
       console.log("Negotiating for issue:", issue);
-  
-      const result = await initiateTwilioCall(); // You might want to pass issue-specific data here
-  
+
+      const result = await initiateTwilioCall(billId, patientId, issue);
+
       if (result.success) {
         setAlert({
           type: "success",

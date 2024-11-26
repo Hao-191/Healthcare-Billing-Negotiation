@@ -5,8 +5,10 @@ import { Issue } from "../types/billingNegotiationTypes";
 interface BillingUploadResponse {
     success: boolean;
     message: string;
-    data?: {
-        issues: Issue[];
+    data: {
+        bill_id: string;
+        patient_id: string;
+        issues?: Issue[];
     };
 }
 
@@ -24,7 +26,7 @@ export const processBillingUpload = async (file: File): Promise<BillingUploadRes
     if (file.size > 1024 * 1024 * 5) {
         throw new Error('File too large. Please upload a file smaller than 5MB.');
     }
-    
+
     const url = `${BASE_URL}/processbillingupload`;
     const formData = new FormData();
     formData.append('file', file);
@@ -42,11 +44,21 @@ export const processBillingUpload = async (file: File): Promise<BillingUploadRes
 };
 
 // Function to initiate a Twilio call
-export const initiateTwilioCall = async (): Promise<TwilioCallResponse> => {
+export const initiateTwilioCall = async (bill_id: string, patient_id: string, issue: Issue): Promise<TwilioCallResponse> => {
     const url = `${BASE_URL}/twiliocall?code=TbAFwtKKN_ZliH-m_h6PS6WYtCsBozYnMROILX1MKfF5AzFutCFtGA%3D%3D`;
 
-    const response = await fetch(url, {
-        method: 'GET'
+    const params = new URLSearchParams({
+        // to: "+1929750540"
+        bill_id: bill_id,
+        patient_id: patient_id,
+        description: issue.description,
+        charged: issue.charged.toString(),
+        expected: issue.expected.toString(),
+        flag: issue.flag,
+    });
+
+    const response = await fetch(url + "?" + params.toString(), {
+        method: 'POST'
     });
 
     if (!response.ok) {
